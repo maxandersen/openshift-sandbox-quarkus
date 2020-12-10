@@ -25,4 +25,13 @@ jobs:
           openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
 
       - name: Build & Deploy
-        run: ./mvnw -B verify -Dquarkus.kubernetes.deploy=true
+        run: ./mvnw -B verify -Dquarkus.kubernetes.deploy=true -Dquarkus.openshift.expose=true
+
+      - name: Install oc
+        uses: redhat-actions/oc-installer@v1
+        with:
+          version: '4.6'
+
+      - name: Print routes
+        run: oc get routes
+        
