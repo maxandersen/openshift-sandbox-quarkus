@@ -23,6 +23,7 @@ jobs:
         with:
           openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
           openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
+          namespace: manderse-code
 
       - name: Build & Deploy
         run: ./mvnw -B verify -Dquarkus.kubernetes.deploy=true -Dquarkus.openshift.expose=true
@@ -34,4 +35,4 @@ jobs:
 
       - name: Print routes
         run: oc get routes
-        
+
