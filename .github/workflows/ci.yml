@@ -17,5 +17,12 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 11
-      - name: Build
-        run: ./mvnw verify -B
+      - name: Authenticate and set context
+        uses: redhat-actions/oc-login@v1
+
+        with:
+          openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
+          openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
+
+      - name: Build & Deploy
+        run: ./mvnw -B verify -Dquarkus.kubernetes.deploy=true
