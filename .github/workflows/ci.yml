@@ -9,7 +9,22 @@ on:
     branches: [ master ]
 
 jobs:
+  openshiftsecrets:
+    name: check if OPENSHIFT secrets are available
+    runs-on: ubuntu-latest
+    outputs:
+      available: ${{ steps.secrets.outputs.available }}
+    steps:
+       - name: Check whether OpenShift requests should be done
+         id: secrets
+         env:
+            secretsavailable: ${{ secrets.OPENSHIFT_SERVER != '' && secrets.OPENSHIFT_TOKEN != '' }}
+         run: |
+            echo "available: ${{ env.secretsavailable }}"
+            echo "::set-output name=available::${{ env.secretsavailable }}"
+
   build:
+    needs: openshiftsecrets
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -17,15 +32,21 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 11
+      - name: Cache Maven packages
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
       - name: Authenticate and set context
+        if: ${{ steps.secrets.outputs.available }}
         uses: redhat-actions/oc-login@v1
-
         with:
           openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
           openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
           namespace: manderse-dev
-
       - name: Build & Deploy
+        if: ${{ steps.secrets.outputs.available }}
         run: ./mvnw -B verify -Dquarkus.kubernetes.deploy=true -Dquarkus.openshift.expose=true
 
 
