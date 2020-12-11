@@ -9,7 +9,7 @@ on:
     branches: [ master ]
 
 jobs:
-  openshiftsecrets:
+  secrets:
     name: check secrets
     runs-on: ubuntu-latest
     outputs:
@@ -24,7 +24,7 @@ jobs:
             echo "::set-output name=available::${{ env.secretsavailable }}"
 
   build:
-    needs: openshiftsecrets
+    needs: secrets
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -39,7 +39,7 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
       - name: Authenticate and set context
-        if: ${{ steps.secrets.outputs.available }}
+        if: ${{ needs.secrets.outputs.available }}
         uses: redhat-actions/oc-login@v1
         with:
           openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
