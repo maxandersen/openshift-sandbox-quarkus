@@ -10,7 +10,7 @@ on:
 
 jobs:
   openshiftsecrets:
-    name: check if OPENSHIFT secrets are available
+    name: check secrets
     runs-on: ubuntu-latest
     outputs:
       available: ${{ steps.secrets.outputs.available }}
@@ -46,7 +46,9 @@ jobs:
           openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
           namespace: manderse-dev
       - name: Build & Deploy
-        if: ${{ steps.secrets.outputs.available }}
-        run: ./mvnw -B verify -Dquarkus.kubernetes.deploy=true -Dquarkus.openshift.expose=true
+        ##if: ${{ steps.secrets.outputs.available }}
+        run: |
+          echo "available: ${{ steps.secrets.outputs.available }}"
+          ./mvnw -B verify -Dquarkus.kubernetes.deploy=true -Dquarkus.openshift.expose=true
 
 
