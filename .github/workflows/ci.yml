@@ -48,7 +48,7 @@ jobs:
       - name: Build & Deploy
         ##if: ${{ steps.secrets.outputs.available }}
         run: |
-          echo "available: ${{ steps.secrets.outputs.available }}"
+          echo "available: ${{ needs.secrets.outputs.available }}"
           ./mvnw -B verify -Dquarkus.kubernetes.deploy=true -Dquarkus.openshift.expose=true
 
 
