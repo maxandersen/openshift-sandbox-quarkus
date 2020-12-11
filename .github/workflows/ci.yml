@@ -38,6 +38,10 @@ jobs:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
+      - name: Build
+        if: ${{ steps.secrets.outputs.available }}
+        run: |
+          ./mvnw -B verify
       - name: Authenticate and set context
         if: ${{ needs.secrets.outputs.available }}
         uses: redhat-actions/oc-login@v1
@@ -45,10 +49,9 @@ jobs:
           openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
           openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
           namespace: manderse-dev
-      - name: Build & Deploy
-        ##if: ${{ steps.secrets.outputs.available }}
+      - name: Deploy
+        if: ${{ needs.secrets.outputs.available }}
         run: |
-          echo "available: ${{ needs.secrets.outputs.available }}"
-          ./mvnw -B verify -Dquarkus.kubernetes.deploy=true -Dquarkus.openshift.expose=true
+          ./mvnw -B verify -DskipTests -Dquarkus.kubernetes.deploy=true -Dquarkus.openshift.expose=true
 
 
