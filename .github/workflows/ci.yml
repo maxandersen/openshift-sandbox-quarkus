@@ -18,7 +18,7 @@ jobs:
        - name: Check whether OpenShift requests should be done
          id: secrets
          env:
-            secretsavailable: ${{ secrets.OPENSHIFT_SERVER != '' && secrets.OPENSHIFT_TOKEN != '' }}
+            secretsavailable: ${{ secrets.OPENSHIFT_SERVER != '' && secrets.OPENSHIFT_TOKEN != '' && github.event.pull_request != '' }}
          run: |
             echo "available: ${{ env.secretsavailable }}"
             echo "::set-output name=available::${{ env.secretsavailable }}"
