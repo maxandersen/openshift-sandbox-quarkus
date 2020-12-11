@@ -18,7 +18,7 @@ jobs:
        - name: Check whether OpenShift requests should be done
          id: secrets
          env:
-            secretsavailable: ${{ secrets.OPENSHIFT_SERVER != '' && secrets.OPENSHIFT_TOKEN != '' && github.event.pull_request != '' }}
+            secretsavailable: ${{ secrets.OPENSHIFT_SERVER != '' && secrets.OPENSHIFT_TOKEN != '' && github.event.pull_request == '' }}
          run: |
             echo "available: ${{ env.secretsavailable }}"
             echo "::set-output name=available::${{ env.secretsavailable }}"
@@ -39,7 +39,6 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
       - name: Build
-        if: ${{ steps.secrets.outputs.available }}
         run: |
           ./mvnw -B verify
       - name: Authenticate and set context
