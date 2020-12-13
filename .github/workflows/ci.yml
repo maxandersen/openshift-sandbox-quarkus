@@ -51,6 +51,6 @@ jobs:
       - name: Deploy
         if: ${{ needs.secrets.outputs.available }}
         run: |
-          ./mvnw -B verify -DskipTests -Dquarkus.kubernetes.deploy=true -Dquarkus.openshift.expose=true
+          ./mvnw -B verify -DskipTests -Dquarkus.kubernetes.deploy=true -Dquarkus.kubernetes.expose=true
 
 
